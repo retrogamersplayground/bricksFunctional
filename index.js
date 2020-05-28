@@ -1,24 +1,27 @@
 let canvas = document.getElementById('canvas');
 let ctx = canvas.getContext('2d');
 
-
 let x  = canvas.width/2
 let y = canvas.height/2;
 let ballRadius = 10;
 let dy = +1;
 let dx = 0;
+
 let paddleX =  x - 32.5;
 let paddleY =  canvas.height - 20;
 
+let randomColor = Math.floor(Math.random()*16777215).toString(16);
 
+
+let blockX = 0;
+let blockY = 0;
+
+//controls
 let leftPressed =  false;
 let rightPressed = false;
 
-
-
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
-
 
 function keyDownHandler(e) {
     if(e.key == "Right" || e.key == "ArrowRight") {
@@ -29,8 +32,6 @@ function keyDownHandler(e) {
     }
 }
 
-
-
 function keyUpHandler(e) {
     if(e.key == "Right" || e.key == "ArrowRight") {
         rightPressed = false;
@@ -40,9 +41,7 @@ function keyUpHandler(e) {
     }
 }
 
-// const randomColor = Math.floor(Math.random()*16777215).toString(16);
-
- function drawBall(){
+function drawBall(){
      ctx.beginPath()
      ctx.arc(x , y , ballRadius , 0 , Math.PI * 2 )
      ctx.fillStyle = "white"; 
@@ -57,25 +56,50 @@ function drawPaddle() {
     ctx.closePath();
 }
 
-// function drawBlock() {
-//     ctx.beginPath();
-//     ctx.rect(0, 0, 40, 40);
-//     ctx.fillStyle = '#' + randomColor;
-//     ctx.fill();
-//     ctx.lineWidth = 2;
-//     ctx.strokeStyle = "gray";
-//     ctx.stroke();
-//     ctx.closePath();
-// }
+function drawBlock(x) {
+    ctx.beginPath();
+    ctx.rect(x, blockY, 40, 40);
+    ctx.fillStyle = "#" + randomColor;
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "gray";
+    ctx.stroke();
+    ctx.closePath();
+}
 
+function generateLocation(){
+    return Math.floor(Math.random() * canvas.width + 1)
+  }
+
+function blockLoop(){
+    //alert('hello')
+    let x = 0;
+    for(let i=0; i < canvas.width; i++){
+      drawBlock(x)
+      x = x + 40;
+  }
+}
+
+/*function blockLoop() {
+        for(let i = 0; i < 3; i ++) {
+            drawBlock();
+        }
+}*/
+
+
+//Game over when ball hits the bottom of the canvas
 function gameOver() {
     if(y === canvas.height) {
         alert('gameOver');
     }
 }
 
+//ball bounce off paddle and canvas
 function bounce() {
-    if(y + ballRadius === paddleY && x > paddleX && x < (paddleX + 65)) {
+    if(y + ballRadius === paddleY && x > paddleX && x < (paddleX + 32.5)) {
+        dy -= 1;
+        dx -= .5;
+    } else if(y + ballRadius === paddleY && x > paddleX && x < (paddleX + 65) && x >= (paddleX + 32.5)) {
         dy -= 1;
         dx += .5;
     } else if(y - ballRadius === canvas.height - 600) {
@@ -85,6 +109,7 @@ function bounce() {
 
 function draw(){
     ctx.clearRect(0, 0, canvas.width , canvas.height)
+    blockLoop();
     drawBall()
     drawPaddle()
     bounce()
@@ -101,25 +126,11 @@ function draw(){
     else if(rightPressed){
         paddleX +=5
     }
-    //drawBlock()
     y += dy
     x += dx
     requestAnimationFrame(draw)
 }
 
-
-
 requestAnimationFrame(draw)
 
-
-
-
-// ctx.clearRect(0, 0, 800, 600); //clear between frame
-
-// ctx.fillStyle = "#00FF00";
-
-// ctx.fillRect(395, 295, 10, 10); //ball
-
-// ctx.fillRect(360, 550, 80, 10); // paddle
-// ctx.fillRect(0, 0, 40, 40); // brick
 
